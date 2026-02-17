@@ -444,7 +444,17 @@
   
     const selected = selectedIds || [];
   
-    let html = '<div class="related-tickets-selector">';
+    let html = '<div>';
+  
+  // フィルタリング用テキストボックス
+    html += '<div style="margin-bottom:8px;">';
+    html += '<input type="text" id="' + containerId + '-filter" ';
+    html += 'placeholder="No.またはタイトルで検索..." ';
+    html += 'style="width:100%;padding:6px;background:#1d2738;border:1px solid #2c3a52;color:#fff;border-radius:6px;" ';
+    html += 'onkeyup="filterRelatedTickets(\'' + containerId + '\')" />';
+    html += '</div>';
+  
+    html += '<div class="related-tickets-selector">';
   
   // 見えないチケットの数をカウント
     const invisibleCount = selected.filter(id => !bugsCache.some(b => b.id === id)).length;
@@ -465,6 +475,8 @@
         const selectedClass = isSelected ? ' selected' : '';
       
         html += '<div class="related-ticket-item' + selectedClass + '" ';
+        html += 'data-bug-no="' + bug.bugNo + '" ';
+        html += 'data-bug-title="' + escapeHtml(bug.title).toLowerCase() + '" ';
         html += 'onclick="toggleRelatedTicket(\'' + containerId + '\',\'' + bug.id + '\')">';
         html += '<span class="related-ticket-checkbox"></span>';
         html += '<span>No.' + bug.bugNo + ' - ' + escapeHtml(bug.title) + '</span>';
@@ -472,6 +484,7 @@
       });
     }
   
+    html += '</div>';
     html += '</div>';
     container.innerHTML = html;
   }
@@ -484,6 +497,32 @@ function toggleRelatedTicket(containerId, bugId) {
   items.forEach(item => {
     if (item.textContent.includes(bugId) || item.getAttribute('onclick').includes(bugId)) {
       item.classList.toggle('selected');
+    }
+  });
+}
+
+function filterRelatedTickets(containerId) {
+  const filterInput = document.getElementById(containerId + '-filter');
+  if (!filterInput) return;
+  
+  const filterText = filterInput.value.toLowerCase().trim();
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  
+  const items = container.querySelectorAll('.related-ticket-item');
+  
+  items.forEach(item => {
+    const bugNo = item.getAttribute('data-bug-no') || '';
+    const bugTitle = item.getAttribute('data-bug-title') || '';
+    
+    // No.またはタイトルに検索文字列が含まれているかチェック
+    const matchesNo = bugNo.includes(filterText);
+    const matchesTitle = bugTitle.includes(filterText);
+    
+    if (filterText === '' || matchesNo || matchesTitle) {
+      item.style.display = 'flex';
+    } else {
+      item.style.display = 'none';
     }
   });
 }
@@ -1168,4 +1207,3 @@ function getSelectedRelatedTickets(containerId) {
 </script>
 </body>
 </html>
-
