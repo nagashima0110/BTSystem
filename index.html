@@ -413,6 +413,7 @@
         console.log('4: bugsCache設定後', bugsCache.length);
         location.hash = '#list';
         console.log('5: location.hash設定後');
+        route(); 
         window.scrollTo(0, 0);
         renderList();
         console.log('6: renderList完了');
