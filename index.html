@@ -596,6 +596,8 @@ function getSelectedRelatedTickets(containerId) {
   window.addEventListener('hashchange', route);
   window.addEventListener('load', route);
   function renderList() {
+    console.log('renderList開始, #list display:', document.getElementById('list').style.display);
+    console.log('renderList開始, #list classList:', document.getElementById('list').className);
     const searchInput = document.getElementById('search');
     const search = searchInput ? searchInput.value.toLowerCase() : '';
     const tbody = document.querySelector('#bugTable tbody');
