@@ -404,11 +404,9 @@
           return;
         }
         bugsCache = result.bugs || [];
-        go('#list');
-        setTimeout(() => {
-          window.scrollTo(0, 0);
-          renderList();
-        }, 100);
+        location.hash = '#list';
+        window.scrollTo(0, 0);
+        renderList();
       })
       .catch(e => {
         hideLoading();
