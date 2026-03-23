@@ -324,6 +324,7 @@
   let isEditMode = false;
   let navigationHistory = []; 
   let originalBugData = {};
+  let bugsLoaded = false;  
     
   function canEditDevFields() {
     if (!currentUser) return false;
@@ -392,6 +393,7 @@
   }
   function loadBugsFromServer() {
     if (!currentUser) return;
+    bugsLoaded = false;
     showLoading();
     callGAS('getBugs', {
       userId: currentUser.userId,
@@ -404,6 +406,7 @@
           return;
         }
         bugsCache = result.bugs || [];
+        bugsLoaded = true;
         location.hash = '#list';
         window.scrollTo(0, 0);
         renderList();
@@ -573,8 +576,10 @@ function getSelectedRelatedTickets(containerId) {
       clearNewForm();
     }
     if (clean === '#list') {
-      renderList();
+        if (bugsLoaded) {
+        renderList();
     }
+}
     if (clean === '#detail' && hash.includes('/')) {
       const bugId = hash.split('/')[1];
       showDetail(bugId);
