@@ -395,28 +395,24 @@
     if (!currentUser) return;
     bugsLoaded = false;
     showLoading();
-    console.log('1: loadBugsFromServer 開始');
     callGAS('getBugs', {
       userId: currentUser.userId,
       userType: currentUser.userType
     })
       .then(result => {
         hideLoading();
-        console.log('2: GASレスポンス受信', result);
         if (!result.success) {
           alert(result.message || '読み込み失敗');
           return;
         }
-        console.log('3: bugsCache設定前', bugsCache.length);
         bugsCache = result.bugs || [];
         bugsLoaded = true;
-        console.log('4: bugsCache設定後', bugsCache.length);
         location.hash = '#list';
-        console.log('5: location.hash設定後');
         route(); 
-        window.scrollTo(0, 0);
-        renderList();
-        console.log('6: renderList完了');
+        requestAnimationFrame(() => {
+          window.scrollTo(0, 0);
+          renderList();
+        });
       })
       .catch(e => {
         hideLoading();
@@ -554,7 +550,6 @@ function getSelectedRelatedTickets(containerId) {
 }
   function route() {
     window.scrollTo(0, 0);
-    console.log('route() 呼ばれた, hash:', location.hash, 'bugsLoaded:', bugsLoaded, 'bugsCache:', bugsCache.length);
     if (!window.__booted) {
       window.__booted = true;
       document.getElementById('login').style.display = 'flex';
@@ -596,8 +591,6 @@ function getSelectedRelatedTickets(containerId) {
   window.addEventListener('hashchange', route);
   window.addEventListener('load', route);
   function renderList() {
-    console.log('renderList開始, #list display:', document.getElementById('list').style.display);
-    console.log('renderList開始, #list classList:', document.getElementById('list').className);
     const searchInput = document.getElementById('search');
     const search = searchInput ? searchInput.value.toLowerCase() : '';
     const tbody = document.querySelector('#bugTable tbody');
